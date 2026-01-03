@@ -1,44 +1,43 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyToken } from "@/lib/auth";
+import { jwtVerify } from "jose";
 
-export function middleware(request: NextRequest) {
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+
+async function verifyEdgeToken(token: string) {
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+export async function middleware(request: NextRequest) {
   const token = request.cookies.get("auth-token")?.value;
   const { pathname } = request.nextUrl;
 
-  // Public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/register"];
-  const isPublicRoute = publicRoutes.includes(pathname);
-
-  // Admin routes
   const isAdminRoute = pathname.startsWith("/admin");
-
-  // Protected routes (dashboard, apply)
   const isProtectedRoute =
     pathname.startsWith("/dashboard") || pathname.startsWith("/apply");
 
-  // If no token and trying to access protected route, redirect to login
-  if (!token && isProtectedRoute) {
+  if (!token && (isProtectedRoute || isAdminRoute)) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // If has token and trying to access login/register, redirect to dashboard
   if (token && (pathname === "/login" || pathname === "/register")) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Verify token for protected routes
   if (token && (isProtectedRoute || isAdminRoute)) {
-    const payload = verifyToken(token);
+    const payload = await verifyEdgeToken(token);
 
-    // If token is invalid, clear cookie and redirect to login
     if (!payload) {
-      const response = NextResponse.redirect(new URL("/login", request.url));
-      response.cookies.delete("auth-token");
-      return response;
+      const res = NextResponse.redirect(new URL("/login", request.url));
+      res.cookies.delete("auth-token");
+      return res;
     }
 
-    // Check admin access
     if (isAdminRoute && payload.role !== "ADMIN") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }

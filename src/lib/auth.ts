@@ -41,7 +41,7 @@ export function verifyToken(token: string): JWTPayload | null {
 
 // Set auth cookie
 export async function setAuthCookie(token: string) {
-  (await cookies()).set(COOKIE_NAME, token, {
+  cookies().set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -52,12 +52,12 @@ export async function setAuthCookie(token: string) {
 
 // Get auth cookie
 export async function getAuthCookie(): Promise<string | undefined> {
-  return (await cookies()).get(COOKIE_NAME)?.value;
+  return cookies().get(COOKIE_NAME)?.value;
 }
 
 // Remove auth cookie
 export async function removeAuthCookie() {
-  (await cookies()).delete(COOKIE_NAME);
+  cookies().delete(COOKIE_NAME);
 }
 
 // Get current user from cookie
