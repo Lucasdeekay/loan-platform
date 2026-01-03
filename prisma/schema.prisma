@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  password          String
+  role              String    @default("USER") // USER or ADMIN
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  loans             Loan[]
+  wallet            Wallet?
+  transactions      Transaction[]
+  
+  // Personal Information (Step 1)
+  fullName          String?
+  phone             String?
+  dateOfBirth       DateTime?
+  address           String?
+  
+  // Application Progress
+  currentStep       Int       @default(1)
+  applicationComplete Boolean @default(false)
+}
+
+model Loan {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Loan Details
+  amount            Float
+  interestRate      Float     @default(5.0) // percentage
+  totalRepayment    Float     // amount + interest
+  status            String    @default("PENDING") // PENDING, APPROVED, REJECTED, REPAID
+  
+  // Dates
+  applicationDate   DateTime  @default(now())
+  approvalDate      DateTime?
+  dueDate           DateTime?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  identityVerification IdentityVerification?
+  guarantor         Guarantor?
+  bankDetails       BankDetails?
+  repayments        Repayment[]
+  
+  @@index([userId])
+}
+
+model IdentityVerification {
+  id                String    @id @default(cuid())
+  loanId            String    @unique
+  loan              Loan      @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  
+  // Identity Info (Step 2)
+  bvn               String
+  nin               String
+  facePhotoUrl      String    // camera capture or upload
+  passportUrl       String?   // optional passport upload
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Guarantor {
+  id                String    @id @default(cuid())
+  loanId            String    @unique
+  loan              Loan      @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  
+  // Guarantor Info (Step 3)
+  fullName          String
+  phone             String
+  address           String
+  relationship      String
+  photoUrl          String
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model BankDetails {
+  id                String    @id @default(cuid())
+  loanId            String    @unique
+  loan              Loan      @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  
+  // Bank Info (Step 4)
+  bankName          String
+  accountNumber     String
+  accountName       String
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Wallet {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Paystack Dedicated Virtual Account
+  accountNumber     String?
+  accountName       String?
+  bankName          String?
+  accountReference  String?   // Paystack reference
+  
+  // Balance
+  balance           Float     @default(0.0)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Transaction {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Transaction Details
+  type              String    // DEPOSIT, REPAYMENT
+  amount            Float
+  reference         String    @unique // Paystack reference
+  status            String    @default("PENDING") // PENDING, SUCCESS, FAILED
+  
+  // Paystack Data
+  paystackData      String?   // JSON string of webhook data
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([reference])
+}
+
+model Repayment {
+  id                String    @id @default(cuid())
+  loanId            String
+  loan              Loan      @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  
+  // Repayment Details
+  amount            Float
+  transactionRef    String    @unique
+  status            String    @default("PENDING") // PENDING, COMPLETED, FAILED
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([loanId])
+}

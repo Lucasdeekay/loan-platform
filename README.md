@@ -1,135 +1,313 @@
-# Turborepo starter
+# LoanPlatform - Next.js Loan Request Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+A comprehensive loan request platform built with Next.js, TypeScript, Prisma, and Paystack integration. Users can apply for loans through a multi-step verification process and manage repayments through their dashboard.
 
-## Using this example
+## 🚀 Features
 
-Run the following command:
+### Core Features
 
-```sh
-npx create-turbo@latest
+- **Multi-Step Loan Application**: 5-step wizard with progress tracking
+  - Step 1: Personal Information
+  - Step 2: Identity Verification (BVN, NIN, Camera/Photo Upload)
+  - Step 3: Guarantor Information
+  - Step 4: Bank Details
+  - Step 5: Review & Submit
+
+- **User Dashboard**: View loan status, repayment details, and wallet balance
+- **Paystack Integration**:
+  - Dedicated Virtual Accounts for each user
+  - Secure payment processing
+  - Webhook handling for real-time updates
+- **Admin Dashboard**: Approve/reject loans and manage applications
+- **Resumable Applications**: Save progress and continue later
+- **Authentication**: Secure JWT-based authentication with HTTP-only cookies
+
+### Technical Features
+
+- **Next.js 14 App Router**: Server and client components
+- **TypeScript**: Full type safety
+- **Prisma ORM**: Type-safe database operations
+- **Tailwind CSS**: Modern, responsive design
+- **React Hook Form + Zod**: Form validation
+- **SQLite (Dev) / PostgreSQL (Prod)**: Flexible database options
+
+## 📋 Prerequisites
+
+- Node.js 18+ and npm
+- Paystack Account ([Sign up here](https://paystack.com))
+
+## 🛠️ Installation
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd loan-platform
 ```
 
-## What's inside?
+### 2. Install dependencies
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+npm install
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 3. Set up environment variables
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```bash
+cp .env.example .env
 ```
 
-### Develop
+Edit `.env` and add your values:
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+DATABASE_URL="file:./dev.db"
+PAYSTACK_SECRET_KEY="sk_test_your_secret_key"
+PAYSTACK_PUBLIC_KEY="pk_test_your_public_key"
+JWT_SECRET="your-secure-random-string"
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 4. Initialize the database
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+npx prisma generate
+npx prisma db push
 ```
 
-### Remote Caching
+### 5. Run the development server
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+```bash
+npm run dev
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
+## 📁 Project Structureloan-platform/
+├── prisma/
+│   └── schema.prisma          # Database schema
+├── src/
+│   ├── app/
+│   │   ├── api/               # API routes
+│   │   │   ├── auth/          # Authentication endpoints
+│   │   │   ├── loan/          # Loan application endpoints
+│   │   │   ├── paystack/      # Paystack integration
+│   │   │   ├── admin/         # Admin endpoints
+│   │   │   └── user/          # User management
+│   │   ├── admin/             # Admin dashboard
+│   │   ├── apply/             # Loan application page
+│   │   ├── dashboard/         # User dashboard
+│   │   ├── login/             # Login page
+│   │   ├── register/          # Registration page
+│   │   └── page.tsx           # Landing page
+│   ├── components/
+│   │   ├── landing/           # Landing page components
+│   │   ├── forms/             # Multi-step form components
+│   │   └── dashboard/         # Dashboard components
+│   └── lib/
+│       ├── db.ts              # Prisma client
+│       ├── auth.ts            # Authentication utilities
+│       └── paystack.ts        # Paystack integration
+├── .env.example               # Environment variables template
+├── package.json
+└── README.md
 ```
-cd my-turborepo
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+## 🔐 Authentication
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+The platform uses JWT tokens stored in HTTP-only cookies for secure authentication.
+
+### User Roles
+
+- **USER**: Can apply for loans and manage repayments
+- **ADMIN**: Can approve/reject loans and view all applications
+
+### Creating an Admin User
+
+After registration, manually update the user role in the database:
+
+```bash
+npx prisma studio
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Navigate to the `User` table and change the `role` field to `"ADMIN"`.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## 💳 Paystack Integration
 
+### Setup Paystack
+
+1. Create a [Paystack account](https://dashboard.paystack.com/signup)
+2. Get your API keys from Settings > API Keys & Webhooks
+3. Add keys to `.env` file
+
+### Webhook Configuration
+
+For local development, use a tool like [ngrok](https://ngrok.com/):
+
+```bash
+ngrok http 3000
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+Add the webhook URL in your Paystack dashboard:<https://your-ngrok-url.ngrok.io/api/paystack/webhook>
+
+### Virtual Accounts
+
+Users automatically get a Paystack Dedicated Virtual Account upon registration. Funds transferred to this account are tracked in real-time via webhooks.
+
+## 📊 Database Schema
+
+### Main Models
+
+- **User**: User accounts and personal information
+- **Loan**: Loan applications with status tracking
+- **IdentityVerification**: BVN, NIN, and photo verification
+- **Guarantor**: Guarantor information
+- **BankDetails**: User bank account details
+- **Wallet**: Paystack virtual account and balance
+- **Transaction**: Payment transactions
+- **Repayment**: Loan repayment records
+
+## 🚢 Deployment
+
+### Database Migration (Production)
+
+1. Update `DATABASE_URL` in `.env` to PostgreSQL connection string
+2. Run migrations:
+
+```bash
+npx prisma migrate dev --name init
+npx prisma generate
 ```
 
-## Useful Links
+### Environment Variables
 
-Learn more about the power of Turborepo:
+Ensure all production environment variables are set:
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+- Use production Paystack keys
+- Generate a secure `JWT_SECRET`
+- Update `NEXT_PUBLIC_BASE_URL` to your domain
+- Configure webhook URL in Paystack dashboard
+
+### Build and Deploy
+
+```bash
+npm run build
+npm start
+```
+
+### Recommended Platforms
+
+- **Vercel**: Automatic deployments from Git
+- **Railway**: Easy PostgreSQL setup
+- **Render**: Full-stack deployment
+
+## 🧪 Testing
+
+### Test User Flow
+
+1. Register a new account
+2. Complete the 5-step loan application
+3. Admin approves the loan
+4. User receives virtual account details
+5. User makes repayment via Paystack
+
+### Test Paystack Integration
+
+Use Paystack test cards for testing payments:
+
+- **Successful payment**: 4084084084084081
+- **Declined payment**: 5061020000000000
+
+## 📝 API Documentation
+
+### Authentication
+
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/logout` - Logout user
+
+### Loan Application
+
+- `POST /api/loan/personal-info` - Save personal info (Step 1)
+- `POST /api/loan/identity-verification` - Save identity (Step 2)
+- `POST /api/loan/guarantor-info` - Save guarantor (Step 3)
+- `POST /api/loan/bank-details` - Save bank details (Step 4)
+- `GET /api/loan/review` - Get application data for review
+
+### Paystack
+
+- `POST /api/paystack/create-wallet` - Create virtual account
+- `POST /api/paystack/repay` - Initialize repayment
+- `POST /api/paystack/webhook` - Handle Paystack webhooks
+
+### Admin
+
+- `POST /api/admin/loans` - Approve/reject loans
+- `GET /api/admin/loans` - Get loan details
+
+## 🎨 Customization
+
+### Styling
+
+All styles use Tailwind CSS. Customize colors in `tailwind.config.ts`:
+
+```typescript
+colors: {
+primary: { /* your colors / },
+secondary: { / your colors */ },
+}
+```
+
+### Interest Rate
+
+Update the interest rate in `/src/app/api/loan/personal-info/route.ts`:
+
+```typescript
+const interestRate = 5.0 // Change to your rate
+```
+
+### Repayment Period
+
+Update the due date calculation in `/src/app/api/admin/loans/route.ts`:
+
+```typescript
+dueDate.setDate(dueDate.getDate() + 30) // Change days
+```
+
+## 🐛 Troubleshooting
+
+### Prisma Issues
+
+```bash
+# Regenerate Prisma client
+npx prisma generate
+# Reset database (⚠️ deletes all data)
+npx prisma db push --force-reset
+```
+
+### Paystack Webhook Not Working
+
+- Verify webhook URL is correct
+- Check webhook signature validation
+- Use ngrok for local testing
+- Check Paystack dashboard logs
+
+### Authentication Issues
+
+- Clear browser cookies
+- Verify JWT_SECRET is set
+- Check token expiration (default: 7 days)
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📧 Support
+
+For issues or questions, please create an issue in the repository.
+
+---
+
+**Built with ❤️ using Next.js, TypeScript, Prisma, and Paystack**
