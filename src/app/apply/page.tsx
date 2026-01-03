@@ -7,6 +7,10 @@ export default async function ApplyPage() {
   // Get current user
   const user = await getCurrentUser();
 
+  if (user && user.role === "ADMIN") {
+    redirect("/admin");
+  }
+
   if (!user) {
     redirect("/login");
   }

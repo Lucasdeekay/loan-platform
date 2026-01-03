@@ -10,7 +10,9 @@ export default async function DashboardPage() {
   // Get current user
   const user = await getCurrentUser();
 
-  console.log("Current User:", user);
+  if (user && user.role === "ADMIN") {
+    redirect("/admin");
+  }
 
   if (!user) {
     redirect("/login");

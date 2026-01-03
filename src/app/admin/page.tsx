@@ -55,10 +55,10 @@ export default async function AdminPage() {
             </div>
             <div className="flex items-center gap-4">
               <Link
-                href="/dashboard"
+                href="/"
                 className="text-gray-600 hover:text-gray-900 transition"
               >
-                My Dashboard
+                Home
               </Link>
               <form action="/api/auth/logout" method="POST">
                 <button
