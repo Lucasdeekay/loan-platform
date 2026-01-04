@@ -4,13 +4,5 @@
   "devCommand": "next dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "env": {
-    "POSTGRES_PRISMA_URL": "@postgres_prisma_url",
-    "POSTGRES_URL_NON_POOLING": "@postgres_url_non_pooling",
-    "PAYSTACK_SECRET_KEY": "@paystack_secret_key",
-    "PAYSTACK_PUBLIC_KEY": "@paystack_public_key",
-    "JWT_SECRET": "@jwt_secret",
-    "NEXT_PUBLIC_BASE_URL": "@next_public_base_url"
-  }
+  "regions": ["iad1"]
 }
