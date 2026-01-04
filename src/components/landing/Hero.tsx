@@ -2,14 +2,25 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white">
+    <section className="relative overflow-hidden min-h-screen flex items-center">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://github.com/Lucasdeekay/loan-platform/blob/main/src/images/hero-bg.jpg"
+          alt="Business background"
+          className="w-full h-full object-cover"
+        />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-600/30 via-primary-700/30 to-primary-900/1"></div>
+      </div>
+
       {/* Decorative background elements */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0 opacity-10 z-10">
         <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-white rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-white">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="animate-fade-in">
@@ -33,7 +44,7 @@ export default function Hero() {
 
               <Link
                 href="/login"
-                className="inline-block bg-primary-800 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary-900 transition-all border-2 border-white/20 text-center"
+                className="inline-block bg-primary-800/80 backdrop-blur-sm text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-primary-900/80 transition-all border-2 border-white/20 text-center"
               >
                 Login
               </Link>
@@ -90,22 +101,22 @@ export default function Hero() {
 
           {/* Right Content - Feature Cards */}
           <div className="grid grid-cols-2 gap-4 animate-slide-up">
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 shadow-xl">
               <div className="text-4xl font-bold mb-2">₦5M</div>
               <div className="text-primary-100">Maximum Loan</div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 shadow-xl">
               <div className="text-4xl font-bold mb-2">5%</div>
               <div className="text-primary-100">Interest Rate</div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 shadow-xl">
               <div className="text-4xl font-bold mb-2">24hrs</div>
               <div className="text-primary-100">Approval Time</div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 shadow-xl">
               <div className="text-4xl font-bold mb-2">100%</div>
               <div className="text-primary-100">Digital Process</div>
             </div>
