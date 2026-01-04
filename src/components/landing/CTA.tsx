@@ -1,8 +1,20 @@
 import Link from "next/link";
+import ctaImage from "../../images/cta-bg.jpg";
 
 export default function CTA() {
   return (
-    <section className="py-20 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 relative overflow-hidden">
+    <section className="py-8 relative overflow-hidden min-h-screen flex items-center">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={ctaImage.src}
+          alt="Business background"
+          className="w-full h-full object-cover"
+        />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-600/30 via-primary-700/30 to-primary-900/1"></div>
+      </div>
+
       {/* Decorative Elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 right-20 w-64 h-64 bg-white rounded-full blur-3xl"></div>

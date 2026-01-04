@@ -1,4 +1,5 @@
 import Link from "next/link";
+import heroHeaderImage from "../../images/hero-bg.jpg";
 
 export default function Hero() {
   return (
@@ -6,7 +7,7 @@ export default function Hero() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://github.com/Lucasdeekay/loan-platform/blob/main/src/images/hero-bg.jpg"
+          src={heroHeaderImage.src}
           alt="Business background"
           className="w-full h-full object-cover"
         />

@@ -41,7 +41,7 @@ A comprehensive loan request platform built with Next.js, TypeScript, Prisma, an
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Lucasdeekay/loan-platform
 cd loan-platform
 ```
 
