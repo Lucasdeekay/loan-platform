@@ -36,3 +36,15 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# environment variables
+.env.local
+.env.production
+.env*.local
+
+# Database
+*.db
+*.db-journal
+prisma/migrations/
+
+.vercel
