@@ -1,23 +1,23 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { SignJWT, jwtVerify, JWTPayload as JoseJWTPayload } from "jose";
 import { cookies } from "next/headers";
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const COOKIE_NAME = "auth-token";
 
-export interface JWTPayload {
+const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+
+export interface JWTPayload extends JoseJWTPayload {
   userId: string;
   email: string;
   role: string;
 }
 
-// Hash password
+/* ---------------- PASSWORDS ---------------- */
+
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
 }
 
-// Verify password
 export async function verifyPassword(
   password: string,
   hashedPassword: string
@@ -25,22 +25,28 @@ export async function verifyPassword(
   return bcrypt.compare(password, hashedPassword);
 }
 
+/* ---------------- JWT ---------------- */
+
 // Generate JWT token
-export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+export async function generateToken(payload: JWTPayload): Promise<string> {
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime("7d")
+    .sign(secret);
 }
 
-// Verify JWT token
-export function verifyToken(token: string): JWTPayload | null {
+export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
-  } catch (error) {
+    const { payload } = await jwtVerify(token, secret);
+    return payload as JWTPayload;
+  } catch {
     return null;
   }
 }
 
-// Set auth cookie
-export async function setAuthCookie(token: string) {
+/* ---------------- COOKIES ---------------- */
+
+export function setAuthCookie(token: string) {
   cookies().set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -50,30 +56,26 @@ export async function setAuthCookie(token: string) {
   });
 }
 
-// Get auth cookie
-export async function getAuthCookie(): Promise<string | undefined> {
+export function getAuthCookie(): string | undefined {
   return cookies().get(COOKIE_NAME)?.value;
 }
 
-// Remove auth cookie
-export async function removeAuthCookie() {
+export function removeAuthCookie() {
   cookies().delete(COOKIE_NAME);
 }
 
-// Get current user from cookie
+/* ---------------- AUTH HELPERS ---------------- */
+
 export async function getCurrentUser(): Promise<JWTPayload | null> {
-  const token = await getAuthCookie();
+  const token = getAuthCookie();
   if (!token) return null;
-  return verifyToken(token);
+  return await verifyToken(token);
 }
 
-// Check if user is authenticated
-export async function isAuthenticated(): Promise<boolean> {
-  const user = await getCurrentUser();
-  return !!user;
+export function isAuthenticated(): boolean {
+  return !!getCurrentUser();
 }
 
-// Check if user is admin
 export async function isAdmin(): Promise<boolean> {
   const user = await getCurrentUser();
   return user?.role === "ADMIN";

@@ -45,7 +45,6 @@ export default function LoginPage() {
       }
 
       // Redirect to dashboard
-      console.log("Navigating to dashboard...");
       router.push("/dashboard");
       router.refresh();
     } catch (err: any) {

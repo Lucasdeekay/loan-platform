@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isAdmin } from "@/lib/auth";
 import db from "@/lib/db";
 import LoanSummary from "@/components/dashboard/LoanSummary";
 import WalletCard from "@/components/dashboard/WalletCard";
@@ -7,15 +7,15 @@ import RepaymentTable from "@/components/dashboard/RepaymentTable";
 import Link from "next/link";
 
 export default async function DashboardPage() {
-  // Get current user
-  const user = await getCurrentUser();
 
-  if (user && user.role === "ADMIN") {
-    redirect("/admin");
-  }
+  const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");
+  }
+
+  if (user.role === "ADMIN") {
+    redirect("/admin");
   }
 
   // Fetch user data with loans, wallet, and transactions
