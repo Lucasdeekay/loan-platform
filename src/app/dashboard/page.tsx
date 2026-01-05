@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, isAdmin } from "@/lib/auth";
+import { getCurrentUser, isAdmin } from "../../lib/auth";
 import db from "@/lib/db";
 import LoanSummary from "@/components/dashboard/LoanSummary";
 import WalletCard from "@/components/dashboard/WalletCard";
@@ -7,7 +7,6 @@ import RepaymentTable from "@/components/dashboard/RepaymentTable";
 import Link from "next/link";
 
 export default async function DashboardPage() {
-
   const user = await getCurrentUser();
 
   if (!user) {
