@@ -3,6 +3,7 @@ import { getCurrentUser } from "../../lib/auth";
 import db from "@/lib/db";
 import LoanForm from "@/components/forms/LoanForm";
 
+
 export default async function ApplyPage() {
   // Get current user
   const user = await getCurrentUser();
