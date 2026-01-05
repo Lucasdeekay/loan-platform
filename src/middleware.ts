@@ -27,6 +27,10 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith("/admin");
   const isProtectedRoute =
     pathname.startsWith("/dashboard") || pathname.startsWith("/apply");
+  
+  if (request.nextUrl.pathname === "/api/auth/logout") {
+    return NextResponse.next();
+  }
 
   // 1️⃣ No token → block protected routes
   if (!token && (isProtectedRoute || isAdminRoute)) {
