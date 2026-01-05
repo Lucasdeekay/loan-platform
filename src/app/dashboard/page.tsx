@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, isAdmin } from "../../lib/auth";
+import { getCurrentUser, isAdmin } from "@/lib/auth";
 import db from "@/lib/db";
 import LoanSummary from "@/components/dashboard/LoanSummary";
 import WalletCard from "@/components/dashboard/WalletCard";

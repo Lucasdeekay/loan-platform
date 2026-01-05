@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "../../../../lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import db from "@/lib/db";
 import { createDedicatedVirtualAccount } from "@/lib/paystack";
 

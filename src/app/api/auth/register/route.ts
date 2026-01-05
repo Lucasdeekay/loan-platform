@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import db from "@/lib/db";
-import {
-  hashPassword,
-  generateToken,
-  setAuthCookie,
-} from "../../../../lib/auth";
+import { hashPassword, generateToken, setAuthCookie } from "@/lib/auth";
 
 // Validation schema
 const registerSchema = z.object({
