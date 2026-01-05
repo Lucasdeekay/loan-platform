@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import db from "@/lib/db";
-import { verifyPassword, generateToken, setAuthCookie } from "@/lib/auth";
+import { verifyPassword, generateToken, setAuthCookie } from "../../../../lib/auth";
 
 // Validation schema
 const loginSchema = z.object({
