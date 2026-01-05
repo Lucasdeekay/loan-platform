@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "../../../../lib/auth";
+import { getCurrentUser } from "../../lib/auth";
 import db from "@/lib/db";
 import LoanForm from "@/components/forms/LoanForm";
 
