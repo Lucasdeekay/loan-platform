@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { logout } from "@/lib/actions/logout";
 import { getCurrentUser } from "@/lib/auth";
 import db from "@/lib/db";
 import Link from "next/link";
@@ -60,7 +61,7 @@ export default async function AdminPage() {
               >
                 Home
               </Link>
-              <form action="/api/auth/logout" method="POST">
+              <form action={logout}>
                 <button
                   type="submit"
                   className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"

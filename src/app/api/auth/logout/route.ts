@@ -1,16 +1,18 @@
-// app/api/auth/logout/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { removeAuthCookie } from "@/lib/auth";
 
-export async function POST(request: Request) {
-  const response = NextResponse.redirect(new URL("/", request.url));
+export async function POST(request: NextRequest) {
+  try {
+    // Remove auth cookie
+    removeAuthCookie();
 
-  response.cookies.set("auth-token", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 0,
-    path: "/",
-  });
-
-  return response;
+    // Redirect to home page
+    return NextResponse.redirect(new URL("/", request.url));
+  } catch (error) {
+    console.error("Logout Error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

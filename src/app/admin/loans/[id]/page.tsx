@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
+import { logout } from "@/lib/actions/logout";
 import { getCurrentUser } from "@/lib/auth";
 import db from "@/lib/db";
 import Link from "next/link";
-import Image from "next/image";
 
 interface PageProps {
   params: {
@@ -86,7 +86,7 @@ export default async function AdminLoanDetailPage({ params }: PageProps) {
               <p className="text-gray-600">Application ID: {loan.id}</p>
             </div>
             <div className="flex items-center gap-4">
-              <form action="/api/auth/logout" method="POST">
+              <form action={logout}>
                 <button
                   type="submit"
                   className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"

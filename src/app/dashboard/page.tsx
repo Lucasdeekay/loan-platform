@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, isAdmin } from "@/lib/auth";
+import { logout } from "@/lib/actions/logout";
+import { getCurrentUser } from "@/lib/auth";
 import db from "@/lib/db";
 import LoanSummary from "@/components/dashboard/LoanSummary";
 import WalletCard from "@/components/dashboard/WalletCard";
@@ -68,7 +69,7 @@ export default async function DashboardPage() {
               >
                 Home
               </Link>
-              <form action="/api/auth/logout" method="POST">
+              <form action={logout}>
                 <button
                   type="submit"
                   className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
