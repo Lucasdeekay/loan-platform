@@ -4,7 +4,7 @@ import { removeAuthCookie } from "@/lib/auth";
 export async function POST(request: NextRequest) {
   try {
     // Remove auth cookie
-    await removeAuthCookie();
+    removeAuthCookie();
 
     // Redirect to home page
     return NextResponse.redirect(new URL("/", request.url));
