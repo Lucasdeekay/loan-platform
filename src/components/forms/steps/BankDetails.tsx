@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLoading } from "@/context/LoadingContext";
 
 const bankDetailsSchema = z.object({
   bankName: z.string().min(1, "Bank name is required"),
@@ -28,6 +29,7 @@ export default function BankDetails({
   onNext,
   onBack,
 }: BankDetailsProps) {
+  const { startLoading, stopLoading } = useLoading();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -64,6 +66,7 @@ export default function BankDetails({
   ];
 
   const onSubmit = async (data: BankDetailsFormData) => {
+    startLoading();
     setIsLoading(true);
     setError("");
 
@@ -89,6 +92,7 @@ export default function BankDetails({
       setError(err.message);
     } finally {
       setIsLoading(false);
+      stopLoading();
     }
   };
 

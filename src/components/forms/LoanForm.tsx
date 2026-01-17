@@ -7,6 +7,7 @@ import IdentityVerification from "./steps/IdentityVerification";
 import GuarantorInfo from "./steps/GuarantorInfo";
 import BankDetails from "./steps/BankDetails";
 import ReviewSubmit from "./steps/ReviewSubmit";
+import { useLoading } from "@/context/LoadingContext";
 
 interface LoanFormProps {
   userId: string;
@@ -20,6 +21,7 @@ export default function LoanForm({
   existingLoan,
 }: LoanFormProps) {
   const router = useRouter();
+  const { startLoading, stopLoading } = useLoading();
   const [step, setStep] = useState(currentStep);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,6 +43,7 @@ export default function LoanForm({
   };
 
   const handleFinalSubmit = async () => {
+    startLoading();
     setIsSubmitting(true);
     try {
       // Mark application as complete
@@ -56,6 +59,7 @@ export default function LoanForm({
       alert("Failed to submit application. Please try again.");
     } finally {
       setIsSubmitting(false);
+      stopLoading();
     }
   };
 

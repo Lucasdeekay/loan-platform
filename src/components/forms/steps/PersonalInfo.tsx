@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLoading } from "@/context/LoadingContext";
 
 const personalInfoSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -25,6 +26,7 @@ interface PersonalInfoProps {
 }
 
 export default function PersonalInfo({ userId, onNext }: PersonalInfoProps) {
+  const { startLoading, stopLoading } = useLoading();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -37,6 +39,7 @@ export default function PersonalInfo({ userId, onNext }: PersonalInfoProps) {
   });
 
   const onSubmit = async (data: PersonalInfoFormData) => {
+    startLoading();
     setIsLoading(true);
     setError("");
 
@@ -62,6 +65,7 @@ export default function PersonalInfo({ userId, onNext }: PersonalInfoProps) {
       setError(err.message);
     } finally {
       setIsLoading(false);
+      stopLoading();
     }
   };
 

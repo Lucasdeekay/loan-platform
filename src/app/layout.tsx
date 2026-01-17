@@ -1,8 +1,13 @@
-import "./../../globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { LoadingProvider } from "../context/LoadingContext";
 
-export const metadata = {
-  title: "Loan Platform",
-  description: "A platform to manage and track loans efficiently.",
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "LoanPlatform - Fast & Secure Loans",
+  description: "Get your loan approved in minutes with our secure platform",
 };
 
 export default function RootLayout({
@@ -12,7 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={inter.className}>
+        <LoadingProvider>{children}</LoadingProvider>
+      </body>
     </html>
   );
 }

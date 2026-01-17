@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLoading } from "@/context/LoadingContext";
 
 const guarantorSchema = z.object({
   fullName: z.string().min(2, "Guarantor full name is required"),
@@ -27,6 +28,7 @@ export default function GuarantorInfo({
   onNext,
   onBack,
 }: GuarantorInfoProps) {
+  const { startLoading, stopLoading } = useLoading();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [guarantorPhoto, setGuarantorPhoto] = useState<string | null>(null);
@@ -57,6 +59,7 @@ export default function GuarantorInfo({
       return;
     }
 
+    startLoading();
     setIsLoading(true);
     setError("");
 
@@ -83,6 +86,7 @@ export default function GuarantorInfo({
       setError(err.message);
     } finally {
       setIsLoading(false);
+      stopLoading();
     }
   };
 

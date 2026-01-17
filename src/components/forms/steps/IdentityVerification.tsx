@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useLoading } from "@/context/LoadingContext";
 
 const identitySchema = z.object({
   bvn: z.string().length(11, "BVN must be exactly 11 digits"),
@@ -25,6 +26,7 @@ export default function IdentityVerification({
   onNext,
   onBack,
 }: IdentityVerificationProps) {
+  const { startLoading, stopLoading } = useLoading();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [facePhoto, setFacePhoto] = useState<string | null>(null);
@@ -112,6 +114,7 @@ export default function IdentityVerification({
       return;
     }
 
+    startLoading();
     setIsLoading(true);
     setError("");
 
@@ -139,6 +142,7 @@ export default function IdentityVerification({
       setError(err.message);
     } finally {
       setIsLoading(false);
+      stopLoading();
     }
   };
 
