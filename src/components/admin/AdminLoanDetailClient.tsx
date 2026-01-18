@@ -5,6 +5,7 @@ import Link from "next/link";
 import LogoutButton from "@/components/ui/LogoutButton";
 import LoanActions from "@/components/admin/LoanActions";
 import Loader from "@/components/ui/Loader";
+import LoanActionsClient from "./LoanActionsClient";
 
 interface Loan {
   id: string;
