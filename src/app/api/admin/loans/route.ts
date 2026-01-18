@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET endpoint to fetch loan details (for detail page)
+// GET endpoint to fetch loan details (for detail page) or all loans (for dashboard)
 export async function GET(request: NextRequest) {
   try {
     // Check if user is admin
@@ -95,46 +95,67 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const loanId = searchParams.get("loanId");
 
-    if (!loanId) {
+    if (loanId) {
+      // Fetch specific loan with all related data
+      const loan = await db.loan.findUnique({
+        where: { id: loanId },
+        include: {
+          user: true,
+          identityVerification: true,
+          guarantor: true,
+          bankDetails: true,
+          repayments: {
+            orderBy: { createdAt: "desc" },
+          },
+        },
+      });
+
+      if (!loan) {
+        return NextResponse.json({ error: "Loan not found" }, { status: 404 });
+      }
+
+      // Remove sensitive data
+      const { password, ...userWithoutPassword } = loan.user;
+
       return NextResponse.json(
-        { error: "Loan ID is required" },
-        { status: 400 }
+        {
+          success: true,
+          loan: {
+            ...loan,
+            user: userWithoutPassword,
+          },
+        },
+        { status: 200 }
+      );
+    } else {
+      // Fetch all loans with user details for admin dashboard
+      const loans = await db.loan.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: {
+              id: true,
+              fullName: true,
+              email: true,
+              phone: true,
+            },
+          },
+          identityVerification: true,
+          guarantor: true,
+          bankDetails: true,
+        },
+      });
+
+      return NextResponse.json(
+        {
+          success: true,
+          loans,
+        },
+        { status: 200 }
       );
     }
-
-    // Fetch loan with all related data
-    const loan = await db.loan.findUnique({
-      where: { id: loanId },
-      include: {
-        user: true,
-        identityVerification: true,
-        guarantor: true,
-        bankDetails: true,
-        repayments: {
-          orderBy: { createdAt: "desc" },
-        },
-      },
-    });
-
-    if (!loan) {
-      return NextResponse.json({ error: "Loan not found" }, { status: 404 });
-    }
-
-    // Remove sensitive data
-    const { password, ...userWithoutPassword } = loan.user;
-
-    return NextResponse.json(
-      {
-        success: true,
-        loan: {
-          ...loan,
-          user: userWithoutPassword,
-        },
-      },
-      { status: 200 }
-    );
   } catch (error) {
-    console.error("Get Loan Error:", error);
+    console.error("Get Loans Error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -19,7 +19,7 @@ export default function LoadingLink({
   onClick,
 }: LoadingLinkProps) {
   const router = useRouter();
-  const { startLoading } = useLoading();
+  const { startLoading, stopLoading } = useLoading();
 
   const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -31,6 +31,7 @@ export default function LoadingLink({
 
     // Small delay for better UX
     setTimeout(() => {
+      stopLoading();
       router.push(href);
     }, 100);
   };
