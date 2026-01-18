@@ -6,6 +6,8 @@ import LoanSummary from "@/components/dashboard/LoanSummary";
 import WalletCard from "@/components/dashboard/WalletCard";
 import RepaymentTable from "@/components/dashboard/RepaymentTable";
 import Link from "next/link";
+import LoadingLink from "@/components/ui/LoadingLink";
+import LogoutButton from "@/components/ui/LogoutButton";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -44,7 +46,7 @@ export default async function DashboardPage() {
 
   const activeLoan =
     userData.loans.find(
-      (loan) => loan.status === "APPROVED" || loan.status === "PENDING"
+      (loan) => loan.status === "APPROVED" || loan.status === "PENDING",
     ) || null;
 
   const hasApplicationInProgress =
@@ -63,20 +65,13 @@ export default async function DashboardPage() {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <Link
+              <LoadingLink
                 href="/"
                 className="text-gray-600 hover:text-gray-900 transition"
               >
                 Home
-              </Link>
-              <form action={logout}>
-                <button
-                  type="submit"
-                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
-                >
-                  Logout
-                </button>
-              </form>
+              </LoadingLink>
+              <LogoutButton />
             </div>
           </div>
         </div>
@@ -224,8 +219,8 @@ export default async function DashboardPage() {
                             transaction.status === "SUCCESS"
                               ? "bg-success/10 text-success"
                               : transaction.status === "PENDING"
-                              ? "bg-warning/10 text-warning"
-                              : "bg-danger/10 text-danger"
+                                ? "bg-warning/10 text-warning"
+                                : "bg-danger/10 text-danger"
                           }`}
                         >
                           {transaction.status}

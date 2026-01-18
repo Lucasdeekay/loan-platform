@@ -3,7 +3,7 @@ import { logout } from "@/lib/actions/logout";
 import { getCurrentUser } from "@/lib/auth";
 import db from "@/lib/db";
 import Link from "next/link";
-import { useLoading } from "@/contexts/LoadingContext";
+import LoanActionsClient from "@/components/admin/LoanActionsClient";
 
 interface PageProps {
   params: {
@@ -14,13 +14,11 @@ interface PageProps {
 export default async function AdminLoanDetailPage({ params }: PageProps) {
   // Check if user is admin
   const user = await getCurrentUser();
-  const { startLoading, stopLoading } = useLoading();
 
   if (!user || user.role !== "ADMIN") {
     redirect("/dashboard");
   }
 
-  startLoading();
   // Fetch loan with all details
   const loan = await db.loan.findUnique({
     where: { id: params.id },
@@ -34,7 +32,6 @@ export default async function AdminLoanDetailPage({ params }: PageProps) {
       },
     },
   });
-  stopLoading();
 
   if (!loan) {
     return (
@@ -149,51 +146,9 @@ export default async function AdminLoanDetailPage({ params }: PageProps) {
               )}
             </div>
 
-            {loan.status === "PENDING" && (
+{loan.status === "PENDING" && (
               <div className="flex items-center gap-3">
-                <form action="/api/admin/loans" method="POST">
-                  <input type="hidden" name="loanId" value={loan.id} />
-                  <input type="hidden" name="action" value="approve" />
-                  <button
-                    type="submit"
-                    className="bg-success text-white px-6 py-3 rounded-lg font-semibold hover:bg-success/90 transition flex items-center gap-2"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Approve Loan
-                  </button>
-                </form>
-
-                <form action="/api/admin/loans" method="POST">
-                  <input type="hidden" name="loanId" value={loan.id} />
-                  <input type="hidden" name="action" value="reject" />
-                  <button
-                    type="submit"
-                    className="bg-danger text-white px-6 py-3 rounded-lg font-semibold hover:bg-danger/90 transition flex items-center gap-2"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Reject Loan
-                  </button>
-                </form>
+                <LoanActionsClient loan={loan} />
               </div>
             )}
           </div>
