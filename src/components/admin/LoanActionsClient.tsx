@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useLoading } from "@/contexts/LoadingContext";
 import { approveLoan, rejectLoan } from "@/lib/actions/loanActions";
+import LoadingLink from "../ui/LoadingLink";
 
 interface LoanActionsClientProps {
   loan: {
