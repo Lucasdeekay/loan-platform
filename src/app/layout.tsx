@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import { LoadingProvider } from "../context/LoadingContext";
-
-const inter = Inter({ subsets: ["latin"] });
+import { LoadingProvider } from "../contexts/LoadingContext";
 
 export const metadata: Metadata = {
   title: "LoanPlatform - Fast & Secure Loans",
@@ -17,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <LoadingProvider>{children}</LoadingProvider>
       </body>
     </html>

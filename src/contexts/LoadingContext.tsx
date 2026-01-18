@@ -1,7 +1,8 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
-import Loader from '../ui/Loader'
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { AnimatePresence } from "framer-motion";
+import Loader from '../components/ui/Loader';
 
 interface LoadingContextType {
   isLoading: boolean
@@ -13,17 +14,20 @@ interface LoadingContextType {
 const LoadingContext = createContext<LoadingContextType | undefined>(undefined)
 
 export function LoadingProvider({ children }: { children: ReactNode }) {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
-  const startLoading = () => setIsLoading(true)
-  const stopLoading = () => setIsLoading(false)
+  const startLoading = () => setIsLoading(true);
+  const stopLoading = () => setIsLoading(false);
 
   return (
-    <LoadingContext.Provider value={{ isLoading, setIsLoading, startLoading, stopLoading }}>
-      {isLoading && <Loader />}
+    <LoadingContext.Provider
+      value={{ isLoading, setIsLoading, startLoading, stopLoading }}
+    >
+      {/* AnimatePresence allows the exit animation to fire */}
+      <AnimatePresence>{isLoading && <Loader />}</AnimatePresence>
       {children}
     </LoadingContext.Provider>
-  )
+  );
 }
 
 export function useLoading() {
@@ -33,3 +37,5 @@ export function useLoading() {
   }
   return context
 }
+
+

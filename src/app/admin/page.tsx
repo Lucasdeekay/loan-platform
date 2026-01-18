@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
-import { logout } from "@/lib/actions/logout";
 import { getCurrentUser } from "@/lib/auth";
 import db from "@/lib/db";
-import Link from "next/link";
+import LoadingLink from "@/components/ui/LoadingLink";
+import LogoutButton from "@/components/ui/LogoutButton";
+import LoanActionsClient from "@/components/admin/LoanActionsClient";
 
 export default async function AdminPage() {
   // Check if user is admin
@@ -55,20 +56,13 @@ export default async function AdminPage() {
               <p className="text-gray-600">Manage loan applications</p>
             </div>
             <div className="flex items-center gap-4">
-              <Link
+              <LoadingLink
                 href="/"
                 className="text-gray-600 hover:text-gray-900 transition"
               >
                 Home
-              </Link>
-              <form action={logout}>
-                <button
-                  type="submit"
-                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
-                >
-                  Logout
-                </button>
-              </form>
+              </LoadingLink>
+              <LogoutButton />
             </div>
           </div>
         </div>
@@ -178,10 +172,10 @@ export default async function AdminPage() {
                             loan.status === "PENDING"
                               ? "bg-warning/10 text-warning"
                               : loan.status === "APPROVED"
-                              ? "bg-success/10 text-success"
-                              : loan.status === "REJECTED"
-                              ? "bg-danger/10 text-danger"
-                              : "bg-blue-100 text-blue-800"
+                                ? "bg-success/10 text-success"
+                                : loan.status === "REJECTED"
+                                  ? "bg-danger/10 text-danger"
+                                  : "bg-blue-100 text-blue-800"
                           }`}
                         >
                           {loan.status}
@@ -191,56 +185,7 @@ export default async function AdminPage() {
                         {new Date(loan.applicationDate).toLocaleDateString()}
                       </td>
                       <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          {loan.status === "PENDING" && (
-                            <>
-                              <form action="/api/admin/loans" method="POST">
-                                <input
-                                  type="hidden"
-                                  name="loanId"
-                                  value={loan.id}
-                                />
-                                <input
-                                  type="hidden"
-                                  name="action"
-                                  value="approve"
-                                />
-                                <button
-                                  type="submit"
-                                  className="bg-success text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-success/90 transition"
-                                >
-                                  Approve
-                                </button>
-                              </form>
-
-                              <form action="/api/admin/loans" method="POST">
-                                <input
-                                  type="hidden"
-                                  name="loanId"
-                                  value={loan.id}
-                                />
-                                <input
-                                  type="hidden"
-                                  name="action"
-                                  value="reject"
-                                />
-                                <button
-                                  type="submit"
-                                  className="bg-danger text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-danger/90 transition"
-                                >
-                                  Reject
-                                </button>
-                              </form>
-                            </>
-                          )}
-
-                          <Link
-                            href={`/admin/loans/${loan.id}`}
-                            className="bg-primary-600 text-white px-3 py-1.5 rounded text-xs font-semibold hover:bg-primary-700 transition"
-                          >
-                            View Details
-                          </Link>
-                        </div>
+                        <LoanActionsClient loan={loan} />
                       </td>
                     </tr>
                   ))

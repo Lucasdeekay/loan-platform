@@ -7,7 +7,7 @@ import IdentityVerification from "./steps/IdentityVerification";
 import GuarantorInfo from "./steps/GuarantorInfo";
 import BankDetails from "./steps/BankDetails";
 import ReviewSubmit from "./steps/ReviewSubmit";
-import { useLoading } from "@/context/LoadingContext";
+import { useLoading } from "@/contexts/LoadingContext";
 
 interface LoanFormProps {
   userId: string;

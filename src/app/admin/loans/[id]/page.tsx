@@ -3,6 +3,7 @@ import { logout } from "@/lib/actions/logout";
 import { getCurrentUser } from "@/lib/auth";
 import db from "@/lib/db";
 import Link from "next/link";
+import { useLoading } from "@/contexts/LoadingContext";
 
 interface PageProps {
   params: {
@@ -13,11 +14,13 @@ interface PageProps {
 export default async function AdminLoanDetailPage({ params }: PageProps) {
   // Check if user is admin
   const user = await getCurrentUser();
+  const { startLoading, stopLoading } = useLoading();
 
   if (!user || user.role !== "ADMIN") {
     redirect("/dashboard");
   }
 
+  startLoading();
   // Fetch loan with all details
   const loan = await db.loan.findUnique({
     where: { id: params.id },
@@ -31,6 +34,7 @@ export default async function AdminLoanDetailPage({ params }: PageProps) {
       },
     },
   });
+  stopLoading();
 
   if (!loan) {
     return (
@@ -111,10 +115,10 @@ export default async function AdminLoanDetailPage({ params }: PageProps) {
                     loan.status === "PENDING"
                       ? "bg-warning/10 text-warning"
                       : loan.status === "APPROVED"
-                      ? "bg-success/10 text-success"
-                      : loan.status === "REJECTED"
-                      ? "bg-danger/10 text-danger"
-                      : "bg-blue-100 text-blue-800"
+                        ? "bg-success/10 text-success"
+                        : loan.status === "REJECTED"
+                          ? "bg-danger/10 text-danger"
+                          : "bg-blue-100 text-blue-800"
                   }`}
                 >
                   {loan.status}
@@ -526,8 +530,8 @@ export default async function AdminLoanDetailPage({ params }: PageProps) {
                           repayment.status === "COMPLETED"
                             ? "bg-success/10 text-success"
                             : repayment.status === "PENDING"
-                            ? "bg-warning/10 text-warning"
-                            : "bg-danger/10 text-danger"
+                              ? "bg-warning/10 text-warning"
+                              : "bg-danger/10 text-danger"
                         }`}
                       >
                         {repayment.status}

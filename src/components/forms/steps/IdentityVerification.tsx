@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useLoading } from "@/context/LoadingContext";
+import { useLoading } from "@/contexts/LoadingContext";
 
 const identitySchema = z.object({
   bvn: z.string().length(11, "BVN must be exactly 11 digits"),
@@ -91,7 +91,7 @@ export default function IdentityVerification({
   // Handle file upload
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: "face" | "passport"
+    type: "face" | "passport",
   ) => {
     const file = e.target.files?.[0];
     if (file) {

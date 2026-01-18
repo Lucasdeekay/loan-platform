@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useLoading } from "@/context/LoadingContext";
+import { useLoading } from "@/contexts/LoadingContext";
 
 const bankDetailsSchema = z.object({
   bankName: z.string().min(1, "Bank name is required"),
