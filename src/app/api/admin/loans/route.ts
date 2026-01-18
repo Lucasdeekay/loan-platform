@@ -3,6 +3,13 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import db from "@/lib/db";
 
+// Cache configuration for admin data (5 minutes for stats, 1 minute for loans)
+const CACHE_DURATION_STATS = 5 * 60; // 5 minutes
+const CACHE_DURATION_LOANS = 60; // 1 minute
+
+// Simple in-memory cache (consider Redis for production)
+const cache = new Map<string, { data: any; timestamp: number }>();
+
 export async function POST(request: NextRequest) {
   try {
     // Check if user is admin
@@ -96,6 +103,15 @@ export async function GET(request: NextRequest) {
     const loanId = searchParams.get("loanId");
 
     if (loanId) {
+      // For loan details, use minimal caching (recent data is important)
+      const cacheKey = `loan-${loanId}`;
+      const cached = cache.get(cacheKey);
+      const now = Date.now();
+      
+      if (cached && (now - cached.timestamp) < 30000) { // 30 seconds cache
+        return NextResponse.json(cached.data, { status: 200 });
+      }
+
       // Fetch specific loan with all related data
       const loan = await db.loan.findUnique({
         where: { id: loanId },
@@ -117,39 +133,156 @@ export async function GET(request: NextRequest) {
       // Remove sensitive data
       const { password, ...userWithoutPassword } = loan.user;
 
-      return NextResponse.json(
-        {
-          success: true,
-          loan: {
-            ...loan,
-            user: userWithoutPassword,
-          },
+      const responseData = {
+        success: true,
+        loan: {
+          ...loan,
+          user: userWithoutPassword,
         },
-        { status: 200 }
-      );
+      };
+
+      // Cache the response
+      cache.set(cacheKey, { data: responseData, timestamp: now });
+
+      return NextResponse.json(responseData, { status: 200 });
     } else {
-      // Fetch all loans with user details for admin dashboard
-      const loans = await db.loan.findMany({
-        orderBy: { createdAt: "desc" },
-        include: {
-          user: {
-            select: {
-              id: true,
-              fullName: true,
-              email: true,
-              phone: true,
+      const { searchParams } = new URL(request.url);
+      const page = parseInt(searchParams.get("page") || "1");
+      const limit = parseInt(searchParams.get("limit") || "10");
+      const search = searchParams.get("search") || "";
+      const status = searchParams.get("status") || "";
+      
+      const skip = (page - 1) * limit;
+      const now = Date.now();
+
+      // Check cache for stats (more cacheable)
+      const statsCacheKey = `admin-stats`;
+      let stats;
+      const cachedStats = cache.get(statsCacheKey);
+      
+      if (cachedStats && (now - cachedStats.timestamp) < CACHE_DURATION_STATS) {
+        stats = cachedStats.data;
+      } else {
+        // Calculate statistics
+        const [total, pending, approved, rejected, repaid, totalDisbursedResult] = await Promise.all([
+          db.loan.count(),
+          db.loan.count({ where: { status: "PENDING" } }),
+          db.loan.count({ where: { status: "APPROVED" } }),
+          db.loan.count({ where: { status: "REJECTED" } }),
+          db.loan.count({ where: { status: "REPAID" } }),
+          db.loan.aggregate({
+            where: {
+              status: { in: ["APPROVED", "REPAID"] },
+            },
+            _sum: {
+              amount: true,
+            },
+          }),
+        ]);
+
+        stats = {
+          total,
+          pending,
+          approved,
+          rejected,
+          repaid,
+          totalDisbursed: totalDisbursedResult._sum.amount || 0,
+        };
+
+        // Cache stats for longer
+        cache.set(statsCacheKey, { data: stats, timestamp: now });
+      }
+
+      // Check cache for loans (less cacheable)
+      const loansCacheKey = `loans-${page}-${limit}-${search}-${status}`;
+      const cachedLoans = cache.get(loansCacheKey);
+      
+      if (cachedLoans && (now - cachedLoans.timestamp) < CACHE_DURATION_LOANS) {
+        return NextResponse.json(
+          {
+            success: true,
+            ...cachedLoans.data,
+            stats,
+          },
+          { status: 200 }
+        );
+      }
+
+      // Build where clause
+      const where: any = {};
+      
+      if (status) {
+        where.status = status;
+      }
+      
+      if (search) {
+        where.OR = [
+          {
+            user: {
+              fullName: {
+                contains: search,
+                mode: "insensitive",
+              },
             },
           },
-          identityVerification: true,
-          guarantor: true,
-          bankDetails: true,
+          {
+            user: {
+              email: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          },
+        ];
+      }
+
+      // Fetch loans with pagination and only necessary data
+      const [loans, totalCount] = await Promise.all([
+        db.loan.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            amount: true,
+            interestRate: true,
+            totalRepayment: true,
+            status: true,
+            applicationDate: true,
+            approvalDate: true,
+            dueDate: true,
+            user: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true,
+                phone: true,
+              },
+            },
+          },
+        }),
+        db.loan.count({ where }),
+      ]);
+
+      const loansData = {
+        loans,
+        pagination: {
+          page,
+          limit,
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limit),
         },
-      });
+      };
+
+      // Cache loans data
+      cache.set(loansCacheKey, { data: loansData, timestamp: now });
 
       return NextResponse.json(
         {
           success: true,
-          loans,
+          ...loansData,
+          stats,
         },
         { status: 200 }
       );

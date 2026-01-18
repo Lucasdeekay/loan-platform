@@ -5,7 +5,6 @@ import Link from "next/link";
 import LogoutButton from "@/components/ui/LogoutButton";
 import LoanActions from "@/components/admin/LoanActions";
 import Loader from "@/components/ui/Loader";
-import LoanActionsClient from "./LoanActionsClient";
 
 interface Loan {
   id: string;
@@ -56,6 +55,119 @@ interface PageProps {
   };
 }
 
+// Loading skeleton component for detail page
+function DetailLoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Header skeleton */}
+      <div className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <div className="h-8 bg-gray-200 rounded w-64 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-48"></div>
+            </div>
+            <div className="h-8 bg-gray-200 rounded w-24"></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Status and Actions skeleton */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="h-6 bg-gray-200 rounded w-24"></div>
+              <div className="h-8 bg-gray-200 rounded w-32"></div>
+            </div>
+            <div className="flex gap-2">
+              <div className="h-10 bg-gray-200 rounded w-20"></div>
+              <div className="h-10 bg-gray-200 rounded w-20"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content skeleton */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Applicant Information skeleton */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+              <div className="h-6 bg-gray-200 rounded w-48 mb-4"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i}>
+                    <div className="h-4 bg-gray-200 rounded w-20 mb-1"></div>
+                    <div className="h-5 bg-gray-200 rounded w-32"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Identity Verification skeleton */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+              <div className="h-6 bg-gray-200 rounded w-48 mb-4"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <div className="h-4 bg-gray-200 rounded w-16 mb-1"></div>
+                  <div className="h-5 bg-gray-200 rounded w-24"></div>
+                </div>
+                <div>
+                  <div className="h-4 bg-gray-200 rounded w-16 mb-1"></div>
+                  <div className="h-5 bg-gray-200 rounded w-24"></div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="aspect-square bg-gray-200 rounded-lg"></div>
+                <div className="aspect-square bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column skeleton */}
+          <div className="space-y-6">
+            {/* Loan Summary skeleton */}
+            <div className="bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl shadow-lg p-6">
+              <div className="h-6 bg-gray-400 rounded w-32 mb-4"></div>
+              <div className="space-y-4">
+                <div>
+                  <div className="h-4 bg-gray-400 rounded w-20 mb-1"></div>
+                  <div className="h-8 bg-gray-400 rounded w-24"></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="h-4 bg-gray-400 rounded w-20 mb-1"></div>
+                    <div className="h-6 bg-gray-400 rounded w-16"></div>
+                  </div>
+                  <div>
+                    <div className="h-4 bg-gray-400 rounded w-20 mb-1"></div>
+                    <div className="h-6 bg-gray-400 rounded w-16"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Repayment History skeleton */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+              <div className="h-6 bg-gray-200 rounded w-32 mb-4"></div>
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <div className="h-4 bg-gray-200 rounded w-20 mb-1"></div>
+                      <div className="h-3 bg-gray-200 rounded w-16"></div>
+                    </div>
+                    <div className="h-6 bg-gray-200 rounded w-16"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminLoanDetailClient({ params }: PageProps) {
   const [loan, setLoan] = useState<Loan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +179,11 @@ export default function AdminLoanDetailClient({ params }: PageProps) {
 
   const fetchLoan = async () => {
     try {
-      const response = await fetch(`/api/admin/loans?loanId=${params.id}`);
+      const response = await fetch(`/api/admin/loans?loanId=${params.id}`, {
+        headers: {
+          'Cache-Control': 'max-age=30', // Allow 30s caching
+        },
+      });
       
       if (!response.ok) {
         throw new Error("Failed to fetch loan details");
@@ -89,7 +205,7 @@ export default function AdminLoanDetailClient({ params }: PageProps) {
   };
 
   if (loading) {
-    return <Loader />;
+    return <DetailLoadingSkeleton />;
   }
 
   if (error) {
@@ -225,7 +341,7 @@ export default function AdminLoanDetailClient({ params }: PageProps) {
 
             {loan.status === "PENDING" && (
               <div className="flex items-center gap-3">
-                <LoanActionsClient loan={loan} />
+                <LoanActions loan={loan} />
               </div>
             )}
           </div>
