@@ -5,7 +5,7 @@ import { useLoading } from "@/contexts/LoadingContext";
 
 export default function LogoutButton() {
   const router = useRouter();
-  const { startLoading } = useLoading();
+  const { startLoading, stopLoading } = useLoading();
 
   const handleLogout = async () => {
     startLoading();
@@ -23,6 +23,9 @@ export default function LogoutButton() {
     } catch (error) {
       console.error("Logout failed:", error);
       router.push("/");
+    } finally {
+      // Ensure loading stops after navigation
+      stopLoading();
     }
   };
 
